@@ -1,0 +1,49 @@
+{
+  "articles": [
+    {
+      "id": 1779757994176.2244,
+      "date": "May 26, 10:13",
+      "title": "歯科医が患者に陰部を舐めさせた事件、きぬた歯科院長が警鐘「すぐ転院を」",
+      "japanese": "記事を読む",
+      "category": "society",
+      "imageUrl": "https://image.news.livedoor.com/newsimage/stf/0/7/07fa3_1585_48a262d2c9b7503dff2ed9d2933d0287.jpg",
+      "aiContent": {
+        "simplify": "歯医者(はいしゃ)さんが、患者(かんじゃ)さんに体(からだ)のプライベートな場所(ばしょ)をなめさせるという悪(わる)い事件(じけん)がありました。きぬた歯科(しか)の院長(いんちょう)は「すぐに別(べつ)の歯医者(はいしゃ)さんに行(い)きなさい」と注意(ちゅうい)しました。",
+        "summary": "・歯科医(しかい)が患者(かんじゃ)に不適切(ふてきせつ)な行為(こうい)を強要(きょうよう)した事件(じけん)が起(お)きました。\n・きぬた歯科(しか)の院長(いんちょう)が、この問題(もんだい)について意見(いけん)を述(の)べました。\n・院長(いんちょう)は、被害(ひがい)に遭(あ)った患者(かんじゃ)に「すぐ他(ほか)の歯科(しか)医院(いいん)へ移(うつ)るべきだ」と強(つよ)く忠告(ちゅうこく)しています。",
+        "translate": "An incident where a dentist made a patient lick their private parts; Kinuta Dental Clinic Director issues a warning: 'Transfer to another clinic immediately.'",
+        "furigana": "歯科医(しかい)が患者(かんじゃ)に陰部(いんぶ)を舐(な)めさせた事件(じけん)、きぬた歯科(しか)院長(いんちょう)が警鐘(けいしょう)「すぐ転院(てんいん)を」"
+      },
+      "url": "https://news.livedoor.com/article/detail/31370760/"
+    },
+    {
+      "id": 1779757984082.0952,
+      "date": "May 26, 10:13",
+      "title": "高さ5mほどの滝から転落か、50代男性の遺体発見される 岐阜・中津川市",
+      "japanese": "記事を読む",
+      "category": "society",
+      "imageUrl": "https://image.news.livedoor.com/newsimage/stf/7/9/79aab_1780_a48b02502ef2cca5181b881c0c03c0aa.jpg",
+      "aiContent": {
+        "simplify": "岐阜県(ぎふけん)中津川市(なかつがわし)で、5メートルくらいの滝(たき)からおちたかもしれない、50さいくらいの男(おとこ)の人(ひと)の体(からだ)が見(み)つかりました。",
+        "summary": "・岐阜県中津川市で、50代男性とみられる遺体が見つかりました。\n・その男性は、高さ約5mの滝から転落した可能性があります。",
+        "translate": "Body of Man in His 50s Found in Nakatsugawa City, Gifu; Possible Fall from a Waterfall About 5m High.",
+        "furigana": "高(たか)さ5m(メートル)ほどの滝(たき)から転落(てんらく)か、50代(だい)男性(だんせい)の遺体(いたい)発見(はっけん)される 岐阜(ぎふ)・中津川市(なかつがわし)"
+      },
+      "url": "https://news.livedoor.com/article/detail/31370447/"
+    },
+    {
+      "id": 1779757975541.888,
+      "date": "May 26, 10:12",
+      "title": "ファミマ「新食感」のシュー発売",
+      "japanese": "ざっくり言うと\nファミマで「絶品シュークリーム大集（シュー）合！」キャンペーンが開催\n編集部がシュークリームの製造工場に潜入し、ラインの裏側を取材した\n「ザクほろ」「もちむに」といった新食感の開発秘話を担当者が明かしている\n記事を読む",
+      "category": "business",
+      "imageUrl": "https://image.news.livedoor.com/newsimage/stf/3/e/3ebfb837fc6a1ac0b3d562e4341f1787.jpg",
+      "aiContent": {
+        "simplify": "コンビニのファミリーマートで、「絶品(ぜっぴん)シュークリーム大集合(だいしゅうごう)！」というイベントがあります。ニュースの会社(かいしゃ)の人が、シュークリームを作(つく)る工場(こうじょう)にひみつで行(い)って、作(つく)り方(かた)を見(み)ました。「ザクほろ」や「もちむに」のような、新(あたら)しい食感(しょっかん)のシュークリームがどうやってできたか、担当(たんとう)の人(ひと)が教(おし)えてくれました。",
+        "summary": "・ファミマで「絶品シュークリーム大集合！」キャンペーンが開催されます。\n・編集部がシュークリームの製造工場に潜入し、生産ラインの裏側を取材しました。\n・「ザクほろ」「もちむに」といった新食感のシュークリームの開発秘話が担当者から明かされました。",
+        "translate": "FamilyMart is launching a \"Delicious Cream Puff Grand Collection!\" campaign. The editorial department secretly visited a cream puff factory to report on the behind-the-scenes of the production line. A representative revealed the secret stories behind the development of new cream puff textures, such as \"crispy and crumbly\" and \"chewy and soft.\"",
+        "furigana": "ファミマ「新(しん)食感(しょっかん)」のシュー発売(はつばい)"
+      },
+      "url": "https://news.livedoor.com/article/detail/31234648/"
+    }
+  ]
+}
