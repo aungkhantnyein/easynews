@@ -1,0 +1,435 @@
+/* Color Palette & Font setup */
+:root {
+    --bg-app: #f2f0e8;
+    --bg-white: #ffffff;
+    --bg-card-hover: #faf9f5;
+    --text-primary: #333333;
+    --text-muted: #7e7c75;
+    --border-color: #e5e2d9;
+    --accent-color: #dfdbcf;
+    --ai-card-bg: #f4f2ea;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* APP STRUCTURE VIEWPORT WRAPPER */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+}
+
+/* FIXED SIDEBAR STYLE COMPONENT */
+.sidebar {
+    width: 260px;
+    background-color: var(--bg-app);
+    border-right: 1px solid var(--border-color);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed; /* Sidebar ကို Screen ပေါ်တွင် အသေထားခြင်း */
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.logo-icon {
+    background-color: #4a5c4e;
+    color: white;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--text-primary);
+}
+
+.menu-group {
+    flex-grow: 1;
+}
+
+.menu-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-item:hover, .nav-item.active {
+    background-color: var(--bg-white);
+    color: var(--text-primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* MAIN CONTENT VIEWPORT CONTAINER */
+.main-content {
+    flex-grow: 1;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: 260px; /* Sidebar စာမျက်နှာအကျယ်အတိုင်း နေရာလွတ်ချန်ခြင်း */
+    width: calc(100% - 260px);
+}
+
+/* TOP TOOLBAR NAVBAR */
+.top-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.search-container {
+    position: relative;
+    width: 320px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.search-container input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid transparent;
+    background-color: #e8e5dc;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.search-container input:focus {
+    background-color: var(--bg-white);
+    border-color: var(--border-color);
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.toggle-btn {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.profile-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+/* GRID SPLITTER SYSTEM LAYOUT */
+.content-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr; /* ဘယ်ဘက်ခြမ်းအကျယ်အား သတ်မှတ်ခြင်း */
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+}
+
+/* SCROLLABLE LEFT COLUMN FEED WRAPPER */
+.news-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: calc(100vh - 110px); /* မျက်နှာပြင်အမြင့်အတိုင်း ကန့်သတ်ခြင်း */
+    overflow-y: auto; /* ဒေတာများပါက Scroll သီးသန့်ဆွဲရန် */
+    padding-right: 6px;
+}
+
+.news-feed::-webkit-scrollbar {
+    width: 6px;
+}
+.news-feed::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feed-item {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feed-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    background-color: var(--bg-card-hover);
+}
+
+.feed-item.active {
+    border-color: #6d8471;
+    box-shadow: 0 0 0 1px #6d8471;
+}
+
+.feed-date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.feed-headline {
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+/* STICKY RIGHT COLUMN ARTICLE VIEWER BLOCK */
+.article-viewer {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px;
+    height: calc(100vh - 110px); /* ညာဘက်ခြမ်း Screen အမြင့်ပြည့်ယူခြင်း */
+    position: sticky; /* Sticky စနစ်ဖြင့် မျက်နှာပြင်တွင် အသေကပ်ထားခြင်း */
+    top: 86px;
+    overflow-y: auto; /* စာသားရှည်ပါက ၎င်း Box ထဲတွင်တင် Scroll ပြန်ဖြစ်စေရန် */
+}
+
+.main-article {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.article-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.category-badge {
+    background-color: #fcebe6;
+    color: #e07a5f;
+}
+
+.read-time {
+    background-color: #f0ede4;
+    color: var(--text-muted);
+}
+
+.article-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+/* 💡 ARTICLE MAIN THUMBNAIL DISPLAY CONTAINER (FIXED AND WORKING) */
+.article-image-container {
+    width: 100%;
+    max-height: 250px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-app);
+}
+
+.article-image-container img {
+    width: 100%;
+    height: 250px; /* ဓာတ်ပုံအမြင့်ကို ပုံသေချုပ်ပေးလိုက်ခြင်း */
+    object-fit: cover; /* ဓာတ်ပုံမပြဲဘဲ အချိုးကျကျ ဖြတ်ပေးရန် */
+}
+
+.japanese-raw-box {
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    background-color: var(--bg-card-hover);
+}
+
+.japanese-raw-box p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+    letter-spacing: 0.5px;
+}
+
+/* AI BOX */
+.ai-reading-card {
+    background-color: var(--ai-card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.ai-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+}
+
+.ai-content {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #4a4a4a;
+}
+
+/* ACTIONS TOOLBAR FOOTER COMPONENT */
+.article-utilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: auto; /* အမြဲတမ်း အောက်ခြေတွင် ကပ်နေစေရန် */
+    border-top: 1px solid var(--border-color);
+    padding-top: 24px;
+    width: 100%;
+}
+
+.article-utilities .util-btn, 
+.article-utilities .source-btn {
+    flex: 1 1 calc(20% - 12px);
+    min-width: 115px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.article-utilities .source-btn {
+    text-decoration: none;
+    background-color: #e5e2d9;
+    color: #333;
+}
+
+.article-utilities .util-btn:hover,
+.article-utilities .source-btn:hover {
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+}
+
+.article-utilities .util-btn.active {
+    background-color: var(--bg-white);
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* RESPONSIVE LAYOUT BREAKPOINTS ENGINE */
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+    .sidebar {
+        display: none;
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    .article-viewer {
+        position: static;
+        height: auto;
+    }
+}
