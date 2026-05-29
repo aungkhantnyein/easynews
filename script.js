@@ -14,14 +14,11 @@ const aiContentTextEl = document.getElementById('aiContentText');
 const articleMainImageEl = document.getElementById('articleMainImage');
 const articleCategoryEl = document.getElementById('articleCategory');
 const articleDateEl = document.getElementById('articleDate');
-const articleOriginalLinkEl = document.getElementById('articleOriginalLink'); // 💡 New Link Node mapping
+const articleOriginalLinkEl = document.getElementById('articleOriginalLink');
 const utilityButtons = document.querySelectorAll('.util-btn');
 const navItems = document.querySelectorAll('.nav-item');
 const searchInput = document.getElementById('searchInput');
 
-/**
- * Fetches processed headlines directly from your Node.js application server instance
- */
 async function fetchNews() {
     try {
         feedListEl.innerHTML = `<div style="padding: 16px; color: var(--text-muted); font-size: 0.85rem;">Loading live wire from local database...</div>`;
@@ -40,7 +37,7 @@ async function fetchNews() {
             feedListEl.innerHTML = `<div style="padding: 16px; color: var(--text-muted); font-size: 0.85rem;">Database syncing fresh wires. Please refresh window page...</div>`;
         }
     } catch (error) {
-        console.error("Failed handling client server data fetching utility stream loop:", error);
+        console.error("Failed handling client server data fetching:", error);
         feedListEl.innerHTML = `<div style="padding: 16px; color: #e07a5f; font-size: 0.85rem;">Error tracking feed. Ensure your Node.js local backend is running!</div>`;
     }
 }
@@ -97,19 +94,28 @@ function renderFilteredContent() {
 function renderArticle(currentArticle) {
     if (!currentArticle) return;
     
-    articleTitleEl.textContent = currentArticle.title;
-    articleJapaneseEl.textContent = currentArticle.japanese;
+    if (currentArticle.aiContent && currentArticle.aiContent.furigana) {
+        articleTitleEl.innerHTML = currentArticle.aiContent.furigana;
+    } else {
+        articleTitleEl.innerHTML = currentArticle.title;
+    }
+    
+    // 💡 FRONTEND TUNING: သတင်းစာသားထဲမှ အပိုလိုင်းလွတ်များကို သန့်စင်ပြီး စနစ်တကျ Paragraph ခွဲပြသခြင်း
+    if (currentArticle.japanese) {
+        const cleanedText = currentArticle.japanese.trim();
+        articleJapaneseEl.innerHTML = cleanedText.split('\n').join('<br><br>');
+    } else {
+        articleJapaneseEl.textContent = currentArticle.title;
+    }
     
     if (articleCategoryEl) {
         articleCategoryEl.textContent = currentArticle.category.toUpperCase();
     }
 
-    // Render Real Published Date Text (Includes Year now)
     if (articleDateEl) {
         articleDateEl.innerHTML = `<i class="fa-regular fa-calendar"></i> ${currentArticle.date}`;
     }
 
-    // 💡 Bind the original external source link to the HTML Anchor tag
     if (articleOriginalLinkEl && currentArticle.url) {
         articleOriginalLinkEl.href = currentArticle.url;
     }
@@ -123,7 +129,7 @@ function renderArticle(currentArticle) {
     
     aiContentTextEl.style.whiteSpace = "pre-line";
     if (currentArticle.aiContent && currentArticle.aiContent[activeTab]) {
-        aiContentTextEl.textContent = currentArticle.aiContent[activeTab];
+        aiContentTextEl.innerHTML = currentArticle.aiContent[activeTab];
     } else {
         aiContentTextEl.textContent = "No data structured here contextually.";
     }
@@ -149,7 +155,6 @@ navItems.forEach(item => {
 
 utilityButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-        // Exclude the source link from tab switching animations
         if (btn.id === 'articleOriginalLink') return;
 
         utilityButtons.forEach(b => b.classList.remove('active'));
