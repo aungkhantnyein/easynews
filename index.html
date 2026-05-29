@@ -25,6 +25,7 @@
                     <a href="#" class="nav-item" data-category="sports"><i class="fa-solid fa-running"></i> Sports</a>
                     <a href="#" class="nav-item" data-category="education"><i class="fa-solid fa-graduation-cap"></i> Educational</a>
                     <a href="#" class="nav-item" data-category="society"><i class="fa-solid fa-building"></i> Society</a>
+                    <a href="#" class="nav-item" data-category="business"><i class="fa-solid fa-briefcase"></i> Business</a>
                 </nav>
             </div>
         </aside>
@@ -35,7 +36,6 @@
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
                     <input type="text" id="searchInput" placeholder="Search news...">
                 </div>
-                
             </header>
 
             <div class="content-grid">
@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="japanese-raw-box">
-                            <p id="articleJapanese">Selecting news item from the left panel feed list to display full entry detail modules window initialized...</p>
+                            <p id="articleJapanese">Selecting news item...</p>
                         </div>
 
                         <div class="ai-reading-card">
@@ -68,11 +68,9 @@
                             <div class="ai-content" id="aiContentText"></div>
                         </div>
 
-                        <div class="article-utilities">
+                        <div class="article-utilities" style="grid-template-columns: repeat(3, 1fr);">
                             <button class="util-btn active" data-tab="translate"><i class="fa-solid fa-language"></i> TRANSLATE</button>
-                            <button class="util-btn" data-tab="simplify"><i class="fa-solid fa-baby"></i> EASY JP</button>
                             <button class="util-btn" data-tab="summary"><i class="fa-solid fa-list-check"></i> SUMMARY</button>
-                            <button class="util-btn" data-tab="furigana"><i class="fa-solid fa-font"></i> FURIGANA</button>
                             <a id="articleOriginalLink" href="#" target="_blank" class="source-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> SOURCE</a>
                         </div>
                     </article>
