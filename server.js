@@ -5,6 +5,8 @@ import Parser from 'rss-parser';
 import { GoogleGenAI } from '@google/genai';
 import { JSONFilePreset } from 'lowdb/node';
 import ogs from 'open-graph-scraper';
+import * as cheerio from 'cheerio';
+import iconv from 'iconv-lite';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +15,6 @@ const parser = new Parser();
 app.use(cors());
 app.use(express.json());
 
-// Initialize Gemini AI Client
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_API_KEY) {
   console.error("⚠️ Error: GEMINI_API_KEY is missing in your .env file.");
@@ -21,7 +22,6 @@ if (!GEMINI_API_KEY) {
 }
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-// Initialize Lowdb Local Database Cache
 const defaultData = { articles: [] };
 const db = await JSONFilePreset('db.json', defaultData);
 
@@ -34,16 +34,62 @@ const CATEGORY_IMAGES = {
   business: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop'
 };
 
-/**
- * Core Pipeline: RSS sync -> OG Image Scraping -> AI Generation -> DB Save
- */
+async function scrapeFullArticleText(url) {
+  try {
+    const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!response.ok) return null;
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    let html = buffer.toString('utf-8');
+    let charset = 'utf-8';
+    
+    const charsetMatch = html.match(/charset=["']?([a-zA-Z0-9-_]+)["']?/i);
+    if (charsetMatch && charsetMatch[1]) {
+      charset = charsetMatch[1].toLowerCase();
+    }
+    
+    if (charset !== 'utf-8' && iconv.encodingExists(charset)) {
+      html = iconv.decode(buffer, charset);
+    }
+
+    const $ = cheerio.load(html);
+    let articleBody = $('.articleBody').text().trim() || $('.article_body').text().trim() || $('#article-body').text().trim();
+    
+    if (!articleBody) {
+      const paragraphs = [];
+      $('p').each((i, el) => {
+        const txt = $(el).text().trim();
+        if (txt.length > 30 && !txt.includes('हीं') && !txt.includes('Share')) {
+          paragraphs.push(txt);
+        }
+      });
+      articleBody = paragraphs.slice(0, 4).join('\n');
+    }
+    
+    if (articleBody) {
+      articleBody = articleBody
+        .replace(/写真拡大/g, '')
+        .replace(/記事を読む/g, '')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+    }
+    
+    return articleBody || null;
+  } catch (error) {
+    console.error(`⚠️ Failed to scrape web content from: ${url}`, error.message);
+    return null;
+  }
+}
+
 async function fetchAndProcessNews() {
   console.log("⏰ [Cron Job] Automated Real-Time News Pipeline Started...");
   const FEED_URL = 'https://news.livedoor.com/topics/rss/dom.xml';
   
   try {
     const feed = await parser.parseURL(FEED_URL);
-    const topArticles = feed.items.slice(0, 10);
+    const topArticles = feed.items.slice(0, 5); 
     
     await db.read();
     const existingUrls = db.data.articles.map(a => a.url);
@@ -52,45 +98,66 @@ async function fetchAndProcessNews() {
 
     for (const item of topArticles) {
       if (existingUrls.includes(item.link)) continue;
-      if (newArticlesAdded >= 3) break;
+      if (newArticlesAdded >= 3) break; 
 
       console.log(`✨ Syncing new wire data bundle: ${item.title}`);
       
-      // 💡 FIXED: သတင်းစာသား လုံးဝမပါလာပါက ခေါင်းစဉ်ကိုပဲ AI ဖတ်ရန် Content အဖြစ် သတ်မှတ်ပေးလိုက်သည်
-      let rawJapaneseText = item.contentSnippet || item.content || "";
-      if (!rawJapaneseText || rawJapaneseText.trim() === "" || rawJapaneseText === "本文データなし") {
-         rawJapaneseText = item.title; 
+      let rawJapaneseText = await scrapeFullArticleText(item.link);
+      if (!rawJapaneseText || rawJapaneseText.length < 50) {
+         rawJapaneseText = item.contentSnippet || item.content || item.title;
       }
       
+      const textToAI = rawJapaneseText.slice(0, 800);
+
       const prompt = `
-      あなたは親切な日本語教師、兼ニュース編集者です。
-      提供された日本語のニュース記事をもとに、外国人の日本語学習者のために以下の5つの要素を生成し、必ず指定された【JSONフォーマット】だけで出力してください。他の解説は一切含めないでください。
+      あなたは日本語教師です。外国人の日本語学習者のために、提供されたニュースから指定されたJSONフォーマットを生成してください。
 
       JSON構造のルール:
       {
         "category": "This must be one of these exact lowercased strings: 'sports', 'education', 'society', 'technology', 'entertainment', 'business'.",
-        "simplify": "ここに小学生でも読めるような「やさしい日本語」に書き換えた文章。漢字にはカタカナで半角括弧を使って「漢字(カンジ)」のようにルビを振るか、平仮名多めで書くこと。",
-        "summary": "・ここに元のニュースの重要ポイントを日本語の箇条書き（3点以内）でまとめた文章1。\\n・ポイント2。\\n・ポイント3。",
+        "summary": "ニュースの重要ポイントを日本語の箇著書き（3点以内）でまとめた文章。漢字にはすべてHTMLのrubyタグ（例：<ruby>横領<rt>おうりょう</rt></ruby>）を使ってルビを振ること。改行には \\n を使用してください。",
         "translate": "Here is the accurate and natural English translation of the news article for learners.",
-        "furigana": "ここに元のニュース記事の「見出し（タイトル）」に、すべての漢字に半角括弧で読み仮名を付けたテキスト（例：福島市(ふくしまし)で猛暑日(もうしょび)予想(よそう)）"
+        "furigana": "元のニュースの「見出し（タイトル）」のすべての漢字に、HTMLのrubyタグ（例：<ruby>新<rt>あたら</rt></ruby>しい<ruby>学校<rt>がっこう</rt></ruby>）を使ってルビを完璧に振ったHTMLテキスト"
       }
 
+      ⚠️ CRITICAL HTML RULE:
+      - Never use brackets like ( ) or （ ） for readings in any field.
+      - Every single Kanji character in "furigana" and "summary" MUST be wrapped in <ruby>Kanji<rt>furigana</rt></ruby> format. No skipped Kanji.
+      
       ニュース記事:
       Title: ${item.title}
-      Content: ${rawJapaneseText}
+      Content: ${textToAI}
       `;
 
-      try {
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-          config: { responseMimeType: "application/json" }
-        });
+      // 💡 NEW IMPLEMENTATION: Server ဝန်ပိနေပါက ၃ ကြိမ်အထိ အလိုအလျောက် ပြန်လည်ကြိုးစားမည့် Retry System
+      let responseText = null;
+      const maxRetries = 3;
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: { responseMimeType: "application/json" }
+          });
+          responseText = response.text;
+          break; // အောင်မြင်ပါက loop ပတ်ခြင်းမှ ထွက်မည်
+        } catch (error) {
+          console.warn(`⚠️ Gemini API Error (Attempt ${attempt}/${maxRetries}): ${error.message}`);
+          if (attempt < maxRetries) {
+            console.log("⏳ Server busy (503/429). Waiting 6 seconds before retrying...");
+            await new Promise(resolve => setTimeout(resolve, 6000));
+          } else {
+            throw error; // ၃ ကြိမ်လုံး မရပါက အပြင် Catch block သို့ ပို့မည်
+          }
+        }
+      }
 
-        const aiResult = JSON.parse(response.text);
+      try {
+        if (!responseText) throw new Error("Empty AI response received.");
+        const aiResult = JSON.parse(responseText);
         const mappedCategory = aiResult.category ? aiResult.category.toLowerCase() : 'society';
 
-        // Scraping the real photo
         let imageUrl = CATEGORY_IMAGES[mappedCategory];
         try {
           const ogsResult = await ogs({ url: item.link });
@@ -120,7 +187,6 @@ async function fetchAndProcessNews() {
           category: mappedCategory,
           imageUrl: imageUrl,
           aiContent: {
-            simplify: aiResult.simplify || "やさしい日本語データはありません。",
             summary: aiResult.summary || "・ニュース概要データはありません。",
             translate: aiResult.translate || "No translation available.",
             furigana: aiResult.furigana || item.title
@@ -131,10 +197,12 @@ async function fetchAndProcessNews() {
         db.data.articles.unshift(structuredArticle);
         newArticlesAdded++;
         
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log("⏳ Adhering to Gemini Free Tier Rate limits... Sleeping for 12 seconds...");
+        await new Promise(resolve => setTimeout(resolve, 12000));
 
       } catch (aiError) {
         console.error(`❌ AI Processing failure for asset title: ${item.title}`, aiError.message);
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
     }
 
