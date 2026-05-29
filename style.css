@@ -416,6 +416,41 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
+/* 💡 Added: Ruby Furigana Text Alignment Optimization */
+ruby {
+    ruby-position: over;
+    ruby-align: center;
+}
+
+rt {
+    font-size: 0.58em; /* Furigana စာလုံးအသေးလေးများ၏ အရွယ်အစား */
+    color: #555555; /* အရောင်ကို မျက်စိမအေးအောင် ညှိထားသည် */
+    padding-bottom: 0.2em;
+    user-select: none; /* Furigana ကို copy ကူးရင် မပါအောင် ပိတ်ထားခြင်း */
+}
+
+.article-title ruby rt {
+    font-size: 0.45em; /* ခေါင်းစဉ်ကြီးထဲက Furigana အရွယ်အစား */
+}
+
+/* Ruby Furigana Text Configuration Tuning */
+ruby {
+    ruby-position: over;
+    ruby-align: center;
+}
+
+rt {
+    font-size: 0.55em;
+    color: #4a5c4e; /* ဖတ်ရသက်တောင့်သက်သာရှိမည့် စိမ်းညို့ရောင် */
+    padding-bottom: 0.2em;
+    user-select: none;
+}
+
+.article-title ruby rt {
+    font-size: 0.42em; /* ခေါင်းစဉ်ကြီးထဲက Furigana ကို ပိုပြီး သပ်ရပ်အောင် အရွယ်အစား ချုံ့ထားသည် */
+    line-height: 1.1;
+}
+
 /* RESPONSIVE LAYOUT BREAKPOINTS ENGINE */
 @media (max-width: 1024px) {
     .content-grid {
