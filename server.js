@@ -34,6 +34,10 @@ const CATEGORY_IMAGES = {
   business: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop'
 };
 
+/**
+ * 💡 UPGRADED FILTER: ကြော်ငြာ tag များနှင့် "googletag" script components များကို 
+ * လုံးဝအမြစ်ပြတ် သန့်စင်ဖယ်ရှားပေးမည့် သတင်းညှစ်စနစ်
+ */
 async function scrapeFullArticleText(url) {
   try {
     const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
@@ -55,21 +59,29 @@ async function scrapeFullArticleText(url) {
     }
 
     const $ = cheerio.load(html);
+    
+    // 💡 Scraping မလုပ်မီ HTML အတွင်းရှိ ကြော်ငြာ script block များကို cheerio ဖြင့် ကြိုတင်ဖျက်ထုတ်ခြင်း
+    $('script, style, ins, iframe').remove();
+    
     let articleBody = $('.articleBody').text().trim() || $('.article_body').text().trim() || $('#article-body').text().trim();
     
     if (!articleBody) {
       const paragraphs = [];
       $('p').each((i, el) => {
         const txt = $(el).text().trim();
-        if (txt.length > 30 && !txt.includes('हीं') && !txt.includes('Share')) {
+        // Google tags သို့မဟုတ် ကြော်ငြာစာသားများပါက ဖယ်ထုတ်ရန်
+        if (txt.length > 30 && !txt.includes('हीं') && !txt.includes('Share') && !txt.includes('googletag')) {
           paragraphs.push(txt);
         }
       });
       articleBody = paragraphs.slice(0, 4).join('\n');
     }
     
+    // 💡 CLEANING ENGINE: googletag components များနှင့် မလိုအပ်သော စာသားများကို သန့်စင်ခြင်း
     if (articleBody) {
       articleBody = articleBody
+        .replace(/googletag\.cmd\.push\(function\(\)\s*\{\s*googletag\.display\(.*?\);\s*\}\);/g, '') // 💡 Googletag ad component ဖြတ်ထုတ်ခြင်း
+        .replace(/googletag.*?\}\);/g, '') // ခွဲထွက်နေသော ကျန်ရှိသည့် tag အစိတ်အပိုင်းများ ရှင်းလင်းခြင်း
         .replace(/写真拡大/g, '')
         .replace(/記事を読む/g, '')
         .replace(/\n\s*\n/g, '\n')
@@ -115,7 +127,7 @@ async function fetchAndProcessNews() {
       JSON構造のルール:
       {
         "category": "This must be one of these exact lowercased strings: 'sports', 'education', 'society', 'technology', 'entertainment', 'business'.",
-        "summary": "ニュースの重要ポイントを日本語の箇著書き（3点以内）でまとめた文章。漢字にはすべてHTMLのrubyタグ（例：<ruby>横領<rt>おうりょう</rt></ruby>）を使ってルビを振ること。改行には \\n を使用してください。",
+        "summary": "ニュースの重要ポイントを日本語の箇条書き（3点以内）でまとめた文章。漢字にはすべてHTMLのrubyタグ（例：<ruby>横領<rt>おうりょう</rt></ruby>）を使ってルビを振ること。改行には \\n を使用してください。",
         "translate": "Here is the accurate and natural English translation of the news article for learners.",
         "furigana": "元のニュースの「見出し（タイトル）」のすべての漢字に、HTMLのrubyタグ（例：<ruby>新<rt>あたら</rt></ruby>しい<ruby>学校<rt>がっこう</rt></ruby>）を使ってルビを完璧に振ったHTMLテキスト"
       }
@@ -129,7 +141,6 @@ async function fetchAndProcessNews() {
       Content: ${textToAI}
       `;
 
-      // 💡 NEW IMPLEMENTATION: Server ဝန်ပိနေပါက ၃ ကြိမ်အထိ အလိုအလျောက် ပြန်လည်ကြိုးစားမည့် Retry System
       let responseText = null;
       const maxRetries = 3;
       
@@ -141,14 +152,14 @@ async function fetchAndProcessNews() {
             config: { responseMimeType: "application/json" }
           });
           responseText = response.text;
-          break; // အောင်မြင်ပါက loop ပတ်ခြင်းမှ ထွက်မည်
+          break;
         } catch (error) {
           console.warn(`⚠️ Gemini API Error (Attempt ${attempt}/${maxRetries}): ${error.message}`);
           if (attempt < maxRetries) {
             console.log("⏳ Server busy (503/429). Waiting 6 seconds before retrying...");
             await new Promise(resolve => setTimeout(resolve, 6000));
           } else {
-            throw error; // ၃ ကြိမ်လုံး မရပါက အပြင် Catch block သို့ ပို့မည်
+            throw error;
           }
         }
       }
